@@ -1,5 +1,4 @@
 import 'package:shared_preferences/shared_preferences.dart';
-import '../models/user.dart';
 import 'api_service.dart';
 
 class AuthService {
@@ -8,44 +7,44 @@ class AuthService {
 
   AuthService(this._apiService);
 
-  Future<User> login(String email, String password) async {
+  Future<String> login(String username, String password) async {
     try {
       final response = await _apiService.post('/auth/login', {
-        'email': email,
+        'username': username,
         'password': password,
       });
 
-      final token = response['token'];
-      final userData = response['user'];
+      final token = response['access_token'];
 
       await _saveToken(token);
       _apiService.setAuthToken(token);
 
-      return User.fromJson(userData);
+      return token;
     } catch (e) {
       throw Exception('Login failed: $e');
     }
   }
 
-  Future<User> register({
+  Future<String> register({
+    required String username,
     required String fullName,
     required String email,
     required String password,
   }) async {
     try {
       final response = await _apiService.post('/auth/register', {
-        'fullName': fullName,
+        'username': username,
+        'full_name': fullName,
         'email': email,
         'password': password,
       });
 
-      final token = response['token'];
-      final userData = response['user'];
+      final userId = response['user_id'];
 
-      await _saveToken(token);
-      _apiService.setAuthToken(token);
+      // After successful registration, auto-login the user
+      await login(username, password);
 
-      return User.fromJson(userData);
+      return userId;
     } catch (e) {
       throw Exception('Registration failed: $e');
     }

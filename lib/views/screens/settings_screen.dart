@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
+import '../../viewmodels/auth_viewmodel.dart';
+import '../../core/constants.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -12,6 +16,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _pushNotifications = true;
   bool _newReviewAlerts = true;
   bool _summaryDigests = false;
+
+  Future<void> _handleLogout() async {
+    final authViewModel = context.read<AuthViewModel>();
+    await authViewModel.logout();
+
+    if (mounted) {
+      context.go(AppConstants.loginRoute);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -131,7 +144,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               icon: Icons.logout,
               title: 'Log Out',
               textColor: const Color(0xFF00B8D4),
-              onTap: () {},
+              onTap: _handleLogout,
             ),
             _ActionItem(
               icon: Icons.delete_outline,

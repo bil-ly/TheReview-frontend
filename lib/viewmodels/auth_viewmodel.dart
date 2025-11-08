@@ -35,13 +35,13 @@ class AuthViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> login(String email, String password) async {
+  Future<bool> login(String username, String password) async {
     _state = AuthState.loading;
     _errorMessage = null;
     notifyListeners();
 
     try {
-      _currentUser = await _authService.login(email, password);
+      await _authService.login(username, password);
       _state = AuthState.authenticated;
       notifyListeners();
       return true;
@@ -54,6 +54,7 @@ class AuthViewModel extends ChangeNotifier {
   }
 
   Future<bool> register({
+    required String username,
     required String fullName,
     required String email,
     required String password,
@@ -63,7 +64,8 @@ class AuthViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _currentUser = await _authService.register(
+      await _authService.register(
+        username: username,
         fullName: fullName,
         email: email,
         password: password,

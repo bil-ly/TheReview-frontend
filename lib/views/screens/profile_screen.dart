@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import '../../core/constants.dart';
+import '../../viewmodels/auth_viewmodel.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -185,6 +192,15 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
+  Future<void> _handleLogout() async {
+    final authViewModel = context.read<AuthViewModel>();
+    await authViewModel.logout();
+
+    if (mounted) {
+      context.go(AppConstants.loginRoute);
+    }
+  }
+
   void _showLogoutDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -208,9 +224,9 @@ class ProfileScreen extends StatelessWidget {
             ),
           ),
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(context);
-              context.go(AppConstants.welcomeRoute);
+              await _handleLogout();
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFFE53935),
